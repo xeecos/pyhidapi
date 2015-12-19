@@ -301,7 +301,8 @@ def hid_get_feature_report(device, data):
     global __hidapi
     assert __hidapi is not None
 
-    buf = create_string_buffer(len(data))
+    buf = (c_ubyte * len(data))()
+    cast(buf, POINTER(c_ubyte))
     for n in range(len(data)):
         buf[n] = chr(data[n])
     num = __hidapi.hid_get_feature_report(device, buf, len(data))
@@ -487,13 +488,14 @@ def hid_read(device, length):
     global __hidapi
     assert __hidapi is not None
 
-    buf = create_string_buffer(length)
+    buf = (c_ubyte * length)()
+    cast(buf, POINTER(c_ubyte))
     num = __hidapi.hid_read(device, buf, length)
     if num < 0:
         raise RuntimeError('hid_write() failed.')
     ba = bytearray(num)
     for n in range(num):
-        ba[n] = ord(buf[n])
+        ba[n] = (buf[n])
     return ba
 
 
@@ -521,13 +523,14 @@ def hid_read_timeout(device, length, milliseconds):
     global __hidapi
     assert __hidapi is not None
 
-    buf = create_string_buffer(length)
+    buf = (c_ubyte * length)()
+    cast(buf, POINTER(c_ubyte))
     num = __hidapi.hid_read_timeout(device, buf, length, milliseconds)
     if num < 0:
         raise RuntimeError('hid_write() failed.')
     ba = bytearray(num)
     for n in range(num):
-        ba[n] = ord(buf[n])
+        ba[n] = (buf[n])
     return ba
 
 
@@ -561,7 +564,8 @@ def hid_send_feature_report(device, data):
     global __hidapi
     assert __hidapi is not None
 
-    buf = create_string_buffer(len(data))
+    buf = (c_ubyte * len(data))()
+    cast(buf, POINTER(c_ubyte))
     for n in range(len(data)):
         buf[n] = chr(data[n])
     num = __hidapi.hid_send_feature_report(device, buf, len(data))
@@ -628,8 +632,9 @@ def hid_write(device, data):
     
     global __hidapi
     assert __hidapi is not None
-
-    buf = create_string_buffer(len(data))
+    buf = (c_ubyte * len(data))()
+    cast(buf, POINTER(c_ubyte))
+    #buf = create_string_buffer(len(data))
     for n in range(len(data)):
         buf[n] = data[n]
     num = __hidapi.hid_write(device, buf, len(data))
